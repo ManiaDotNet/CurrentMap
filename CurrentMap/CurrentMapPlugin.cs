@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ManiaNet.DedicatedServer.XmlRpc.MethodCalls;
-using ManiaNet.DedicatedServer.XmlRpc.Structs;
 using System.Net;
 using Newtonsoft.Json;
-using XmlRpc.MethodCalls;
+using XmlRpc.Methods;
 using XmlRpc.Types.Structs;
 using XmlRpc.Types;
-using RazorEngine;
+using System.Web.Razor;
+using ManiaNet.DedicatedServer.XmlRpc.Methods;
+using ManiaNet.DedicatedServer.XmlRpc.Structs;
 
 namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 {
     [RegisterPlugin("CurrentMap", author: "zocka", name: "Current Map")]
-    class CurrentMapPlugin: ControllerPlugin
+    public class CurrentMapPlugin: ControllerPlugin
     {
         private ServerController controller;
 
@@ -35,6 +35,8 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         public override bool Load(ServerController controller)
         {
             this.controller = controller;
+            this.controller.BeginMap += controller_BeginMap;
+            this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
             return true;
         }
 
@@ -42,36 +44,47 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         {
         }
 
+        void controller_PlayerCheckpoint(ServerController sender, ManiaPlanetPlayerCheckpoint methodCall)
+        {
+            string msg = "CP #" + methodCall.CheckpointIndex.ToString() + ": " + methodCall.TimeOrScore.ToString();
+            Console.WriteLine(msg);
+            sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
+        }
+
+        void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
+        {
+            Dictionary<string, string> map = currentMap(methodCall.Map);
+            if (map.ContainsKey("MX"))
+                sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", map["Name"]).Replace("@Model.MX", map["MX"])), 1000);
+            Console.WriteLine(map["name"] + " by " + map["Author"]);
+        }
+
         public override bool Unload()
         {
             return true;
         }
 
-        private void currentMap()
+        private Dictionary<string, string> currentMap(MapInfoStruct map)
         {
-            MethodCall<XmlRpcStruct<MapInfoStruct>, MapInfoStruct> call = new GetCurrentMapInfo();
-            controller.CallMethod(call, 1000);
-            if (!call.HadFault)
+            Dictionary<string, string> mx = mxLookup(map.UId);
+            Dictionary<string, string> author = userLookup(map.Author);
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("Author", author["nickname"]);
+            data.Add("Name", map.Name);
+            data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
+            data.Add("Country", "other");
+            if (mx != null)
             {
-                MapInfoStruct result = call.ReturnValue;
-                Dictionary<string, string> mx = mxLookup(result.UId);
-                if (mx != null)
-                {
-                    var data = new { Author = result.Author, Name = result.Name, Time = result.AuthorTime, Country = "GER", MX = mx["url"] };
-                }
-                else
-                {
-                    var data = new { Author = result.Author, Name = result.Name, Time = result.AuthorTime, Country = "GER" };
-                }
+                data.Add("MX", mx["url"]);
             }
-            
+            return data;
         }
         private void onMapStart(MapInfoStruct mapData)
         {
             Dictionary<string, string> mx = mxLookup(mapData.UId);
             if (mx != null)
             {
-                mxMessage = Razor.Parse(mxMessage, new { Map = mapData.Name, mxLink = mx["url"] });
+                //mxMessage = Razor.Parse(mxMessage, new { Map = mapData.Name, mxLink = mx["url"] });
                 controller.CallMethod(new ChatSendServerMessage(mxMessage), 1000);
             }
             displayWidget();
@@ -91,6 +104,22 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                 return null;
             result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
             result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+            return result;
+        }
+
+        private Dictionary<string, string> userLookup(string account)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            string apiUrl = "http://prprod.de/mpnicks.php?player=" + account;
+            var json = new WebClient().DownloadString(apiUrl);
+            if (json == "null")
+            {
+                result.Add("nickname", account);
+            }
+            else
+            {
+                result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            }
             return result;
         }
     }
