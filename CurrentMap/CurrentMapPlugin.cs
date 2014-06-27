@@ -1,35 +1,31 @@
-﻿using System;
+﻿using ManiaNet.DedicatedServer.XmlRpc.Methods;
+using ManiaNet.DedicatedServer.XmlRpc.Structs;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
-using XmlRpc.Methods;
-using XmlRpc.Types.Structs;
-using XmlRpc.Types;
-using System.Web.Razor;
-using ManiaNet.DedicatedServer.XmlRpc.Methods;
-using ManiaNet.DedicatedServer.XmlRpc.Structs;
 
 namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 {
     [RegisterPlugin("CurrentMap", author: "zocka", name: "Current Map")]
-    public class CurrentMapPlugin: ControllerPlugin
+    public class CurrentMapPlugin : ControllerPlugin
     {
         private ServerController controller;
 
         private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange.com$l";
 
         private string widget = @"<manialink version=""1"">
-	<frame posn=""110 90 5"">
-		<!-- <quad bgcolor=""444C"" sizen=""50 20"" /> -->
-		<label text=""@Model.Name"" textsize=""2"" scale=""0.9"" posn=""3 -3 1"" sizen=""44 4"" style=""TextValueSmallSm"" />
+    <frame posn=""110 90 5"">
+        <!-- <quad bgcolor=""444C"" sizen=""50 20"" /> -->
+        <label text=""@Model.Name"" textsize=""2"" scale=""0.9"" posn=""3 -3 1"" sizen=""44 4"" style=""TextValueSmallSm"" />
 
-		<quad sizen=""3 3"" posn=""3 -7 1"" image=""file://Skins/Avatars/Flags/<% Model.Country %>.dds"" />
-		<label text=""@Model.Author"" textsize=""2"" scale=""0.9"" posn=""7 -7 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
+        <quad sizen=""3 3"" posn=""3 -7 1"" image=""file://Skins/Avatars/Flags/<% Model.Country %>.dds"" />
+        <label text=""@Model.Author"" textsize=""2"" scale=""0.9"" posn=""7 -7 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
 
-		<quad style=""MedalsBig"" substyle=""MedalNadeo"" sizen=""3 3"" posn=""3 -11 1"" />
-		<label text=""@Model.Time"" textsize=""2"" scale=""0.9"" posn=""7 -11 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
-	</frame>
+        <quad style=""MedalsBig"" substyle=""MedalNadeo"" sizen=""3 3"" posn=""3 -11 1"" />
+        <label text=""@Model.Time"" textsize=""2"" scale=""0.9"" posn=""7 -11 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
+    </frame>
 </manialink>";
 
         public override bool Load(ServerController controller)
@@ -44,14 +40,12 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         {
         }
 
-        void controller_PlayerCheckpoint(ServerController sender, ManiaPlanetPlayerCheckpoint methodCall)
+        public override bool Unload()
         {
-            string msg = "CP #" + methodCall.CheckpointIndex.ToString() + ": " + methodCall.TimeOrScore.ToString();
-            Console.WriteLine(msg);
-            sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
+            return true;
         }
 
-        void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
+        private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
         {
             Dictionary<string, string> map = currentMap(methodCall.Map);
             if (map.ContainsKey("MX"))
@@ -59,9 +53,11 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             Console.WriteLine(map["name"] + " by " + map["Author"]);
         }
 
-        public override bool Unload()
+        private void controller_PlayerCheckpoint(ServerController sender, ManiaPlanetPlayerCheckpoint methodCall)
         {
-            return true;
+            string msg = "CP #" + methodCall.CheckpointIndex.ToString() + ": " + methodCall.TimeOrScore.ToString();
+            Console.WriteLine(msg);
+            sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
         }
 
         private Dictionary<string, string> currentMap(MapInfoStruct map)
@@ -79,6 +75,23 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             }
             return data;
         }
+
+        private void displayWidget()
+        {
+        }
+
+        private Dictionary<string, string> mxLookup(string uid)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
+            var json = new WebClient().DownloadString(apiUrl);
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
+            result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+            return result;
+        }
+
         private void onMapStart(MapInfoStruct mapData)
         {
             Dictionary<string, string> mx = mxLookup(mapData.UId);
@@ -90,29 +103,12 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             displayWidget();
         }
 
-        private void displayWidget()
-        {
-            
-        }
-
-        private Dictionary<string, string> mxLookup(string uid)
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
-            var json = new WebClient().DownloadString(apiUrl);
-            if (json == "")
-                return null;
-            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
-            result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
-            return result;
-        }
-
         private Dictionary<string, string> userLookup(string account)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
             string apiUrl = "http://prprod.de/mpnicks.php?player=" + account;
             var json = new WebClient().DownloadString(apiUrl);
-            if (json == "null")
+            if (string.IsNullOrWhiteSpace(json))
             {
                 result.Add("nickname", account);
             }
