@@ -28,12 +28,49 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
     </frame>
 </manialink>";
 
+        private Dictionary<string, string> currentMap = new Dictionary<string,string>();
+
         public override bool Load(ServerController controller)
         {
             this.controller = controller;
             this.controller.BeginMap += controller_BeginMap;
             this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
+            this.controller.BeginMatch += controller_BeginMatch;
+            this.controller.PlayerChat += controller_PlayerChat;
             return true;
+        }
+
+        void controller_PlayerChat(ServerController sender, ManiaPlanetPlayerChat methodCall)
+        {
+            // test without beginning match
+            controller_BeginMatch(sender, null);
+        }
+
+        void controller_BeginMatch(ServerController sender, ManiaPlanetBeginMatch methodCall)
+        {
+            GetCurrentMapInfo call = new GetCurrentMapInfo();
+            
+            Console.WriteLine(sender.CallMethod(call, 3000).ToString()); //False
+
+            if (!call.HadFault)
+            {
+                if (call.ReturnValue != null) {
+                    currentMap = getCurrentMap(call.ReturnValue);
+                    Console.WriteLine("Received mapname " + call.ReturnValue.Name);
+                }
+                else
+                {
+                    Console.WriteLine("GetCurrentMapInfo returned null");
+                }
+            }
+            else
+            {
+                Console.WriteLine("GetCurrentMapInfo had a fault");
+            }
+            if (currentMap.ContainsKey("MX"))
+                sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
+            if (currentMap.ContainsKey("name"))
+                Console.WriteLine(currentMap["name"] + " by " + currentMap["Author"]);
         }
 
         public override void Run()
@@ -47,10 +84,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
         private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
         {
-            Dictionary<string, string> map = currentMap(methodCall.Map);
-            if (map.ContainsKey("MX"))
-                sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", map["Name"]).Replace("@Model.MX", map["MX"])), 1000);
-            Console.WriteLine(map["name"] + " by " + map["Author"]);
+            currentMap = getCurrentMap(methodCall.Map);
         }
 
         private void controller_PlayerCheckpoint(ServerController sender, TrackManiaPlayerCheckpoint methodCall)
@@ -60,18 +94,25 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
         }
 
-        private Dictionary<string, string> currentMap(MapInfoStruct map)
+        private Dictionary<string, string> getCurrentMap(MapInfoStruct map)
         {
-            Dictionary<string, string> mx = mxLookup(map.UId);
-            Dictionary<string, string> author = userLookup(map.Author);
             Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("Author", author["nickname"]);
-            data.Add("Name", map.Name);
-            data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
-            data.Add("Country", "other");
-            if (mx != null)
+            if (map != null)
             {
-                data.Add("MX", mx["url"]);
+                Dictionary<string, string> mx = mxLookup(map.UId);
+                Dictionary<string, string> author = userLookup(map.Author);
+                data.Add("Author", author["nickname"]);
+                data.Add("Name", map.Name);
+                data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
+                data.Add("Country", "other");
+                if (mx != null)
+                {
+                    data.Add("MX", mx["url"]);
+                }
+            }
+            else
+            {
+                Console.WriteLine("received map struct was null");
             }
             return data;
         }
