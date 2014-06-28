@@ -53,7 +53,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             Console.WriteLine(map["name"] + " by " + map["Author"]);
         }
 
-        private void controller_PlayerCheckpoint(ServerController sender, ManiaPlanetPlayerCheckpoint methodCall)
+        private void controller_PlayerCheckpoint(ServerController sender, TrackManiaPlayerCheckpoint methodCall)
         {
             string msg = "CP #" + methodCall.CheckpointIndex.ToString() + ": " + methodCall.TimeOrScore.ToString();
             Console.WriteLine(msg);
