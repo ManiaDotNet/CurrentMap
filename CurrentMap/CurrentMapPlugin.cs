@@ -13,6 +13,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
     {
         private ServerController controller;
 
+        private Dictionary<string, string> currentMap = new Dictionary<string, string>();
         private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange.com$l";
 
         private string widget = @"<manialink version=""1"">
@@ -28,8 +29,6 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
     </frame>
 </manialink>";
 
-        private Dictionary<string, string> currentMap = new Dictionary<string,string>();
-
         public override bool Load(ServerController controller)
         {
             this.controller = controller;
@@ -40,21 +39,30 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             return true;
         }
 
-        void controller_PlayerChat(ServerController sender, ManiaPlanetPlayerChat methodCall)
+        public override void Run()
         {
-            // test without beginning match
-            controller_BeginMatch(sender, null);
         }
 
-        void controller_BeginMatch(ServerController sender, ManiaPlanetBeginMatch methodCall)
+        public override bool Unload()
+        {
+            return true;
+        }
+
+        private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
+        {
+            currentMap = getCurrentMap(methodCall.Map);
+        }
+
+        private void controller_BeginMatch(ServerController sender, ManiaPlanetBeginMatch methodCall)
         {
             GetCurrentMapInfo call = new GetCurrentMapInfo();
-            
+
             Console.WriteLine(sender.CallMethod(call, 3000).ToString()); //False
 
             if (!call.HadFault)
             {
-                if (call.ReturnValue != null) {
+                if (call.ReturnValue != null)
+                {
                     currentMap = getCurrentMap(call.ReturnValue);
                     Console.WriteLine("Received mapname " + call.ReturnValue.Name);
                 }
@@ -73,18 +81,10 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                 Console.WriteLine(currentMap["name"] + " by " + currentMap["Author"]);
         }
 
-        public override void Run()
+        private void controller_PlayerChat(ServerController sender, ManiaPlanetPlayerChat methodCall)
         {
-        }
-
-        public override bool Unload()
-        {
-            return true;
-        }
-
-        private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
-        {
-            currentMap = getCurrentMap(methodCall.Map);
+            // test without beginning match
+            controller_BeginMatch(sender, null);
         }
 
         private void controller_PlayerCheckpoint(ServerController sender, TrackManiaPlayerCheckpoint methodCall)
@@ -92,6 +92,10 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             string msg = "CP #" + methodCall.CheckpointIndex.ToString() + ": " + methodCall.TimeOrScore.ToString();
             Console.WriteLine(msg);
             sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
+        }
+
+        private void displayWidget()
+        {
         }
 
         private Dictionary<string, string> getCurrentMap(MapInfoStruct map)
@@ -117,20 +121,20 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             return data;
         }
 
-        private void displayWidget()
-        {
-        }
-
         private Dictionary<string, string> mxLookup(string uid)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
-            var json = new WebClient().DownloadString(apiUrl);
-            if (string.IsNullOrWhiteSpace(json))
-                return null;
-            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
-            result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
-            return result;
+            try
+            {
+                Dictionary<string, string> result = new Dictionary<string, string>();
+                string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
+                var json = new WebClient().DownloadString(apiUrl);
+                if (string.IsNullOrWhiteSpace(json))
+                    return null;
+                result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
+                result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+                return result;
+            }
+            catch { return null; }
         }
 
         private void onMapStart(MapInfoStruct mapData)
