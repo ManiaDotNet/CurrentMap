@@ -60,6 +60,10 @@
       <Project>{086bb4ea-e79a-482e-84fc-4ea256ecf4b4}</Project>
       <Name>ManiaNet.DedicatedServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ManiaNet.ManiaPlanet\ManiaNet.ManiaPlanet.csproj">
+      <Project>{09cedbce-8dd8-4831-bb1a-430fdcd77517}</Project>
+      <Name>ManiaNet.ManiaPlanet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
