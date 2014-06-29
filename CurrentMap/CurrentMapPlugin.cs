@@ -21,7 +21,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         <!-- <quad bgcolor=""444C"" sizen=""50 20"" /> -->
         <label text=""@Model.Name"" textsize=""2"" scale=""0.9"" posn=""3 -3 1"" sizen=""44 4"" style=""TextValueSmallSm"" />
 
-        <quad sizen=""3 3"" posn=""3 -7 1"" image=""file://Skins/Avatars/Flags/<% Model.Country %>.dds"" />
+        <quad sizen=""3 3"" posn=""3 -7 1"" image=""file://@Model.Country"" />
         <label text=""@Model.Author"" textsize=""2"" scale=""0.9"" posn=""7 -7 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
 
         <quad style=""MedalsBig"" substyle=""MedalNadeo"" sizen=""3 3"" posn=""3 -11 1"" />
@@ -79,6 +79,11 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                 sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
             if (currentMap.ContainsKey("name"))
                 Console.WriteLine(currentMap["name"] + " by " + currentMap["Author"]);
+            string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
+                                          .Replace("@Model.Country", currentMap["Country"])
+                                          .Replace("@Model.Author", currentMap["Author"])
+                                          .Replace("@Model.Time", currentMap["Time"]);
+            sender.CallMethod(new SendDisplayManialinkPage(widgetRendered, 0, false), 1000);
         }
 
         private void controller_PlayerChat(ServerController sender, ManiaPlanetPlayerChat methodCall)
@@ -103,12 +108,13 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             Dictionary<string, string> data = new Dictionary<string, string>();
             if (map != null)
             {
-                Dictionary<string, string> mx = mxLookup(map.UId);
+                //Dictionary<string, string> mx = mxLookup(map.UId);
+                Dictionary<string, string> mx = null;
                 Dictionary<string, string> author = userLookup(map.Author);
                 data.Add("Author", author["nickname"]);
                 data.Add("Name", map.Name);
                 data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
-                data.Add("Country", "other");
+                data.Add("Country", Tools.AvatarByZone(""));
                 if (mx != null)
                 {
                     data.Add("MX", mx["url"]);
