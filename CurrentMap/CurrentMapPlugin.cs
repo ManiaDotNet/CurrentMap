@@ -26,17 +26,36 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
         <quad style=""MedalsBig"" substyle=""MedalNadeo"" sizen=""3 3"" posn=""3 -11 1"" />
         <label text=""@Model.Time"" textsize=""2"" scale=""0.9"" posn=""7 -11 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
+        <frame hidden=""@Model.HasMXRecord"">
+            <quad image=""http://www.mania-exchange.com/Content/images/planet_mx_logo.png"" sizen=""3 3"" posn=""3 -15 1"" />
+            <label text=""@Model.MXTime"" textsize=""2"" scale=""0.9"" posn=""7 -15 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
+        </frame>
     </frame>
 </manialink>";
+        private string testML = @"<manialink version=""1""><label text=""hallo"" textcolor=""00f"" /></manialink>";
+        private string testML2 = @"<manialink version=""1""><label text=""hallo2"" textcolor=""0f0"" posn=""0 10 0"" /></manialink>";
 
         public override bool Load(ServerController controller)
         {
+            Action<ManiaPlanetPlayerChat> unloadAction = playerChatCall => controller.CallMethod(new SendHideManialinkPage(), 1000);
+            controller.RegisterCommand("unload", unloadAction);
+            Action<ManiaPlanetPlayerChat> testMLAction = playerChatCall => controller.CallMethod(new SendDisplayManialinkPage(testML, 0, false), 1000);
+            controller.RegisterCommand("testml", testMLAction);
+            Action<ManiaPlanetPlayerChat> testMLAction2 = playerChatCall => controller.CallMethod(new SendDisplayManialinkPage(testML2, 1000, false), 1000);
+            controller.RegisterCommand("testml2", testMLAction2);
+
             this.controller = controller;
             this.controller.BeginMap += controller_BeginMap;
-            this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
+            //this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
             this.controller.BeginMatch += controller_BeginMatch;
             this.controller.PlayerChat += controller_PlayerChat;
+            this.controller.EndMatch += controller_EndMatch;
             return true;
+        }
+
+        void controller_EndMatch(ServerController sender, ManiaPlanetEndMatch methodCall)
+        {
+            sender.CallMethod(new SendHideManialinkPage(), 1000);
         }
 
         public override void Run()
@@ -57,33 +76,25 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         {
             GetCurrentMapInfo call = new GetCurrentMapInfo();
 
-            Console.WriteLine(sender.CallMethod(call, 3000).ToString()); //False
-
             if (!call.HadFault)
             {
                 if (call.ReturnValue != null)
                 {
                     currentMap = getCurrentMap(call.ReturnValue);
                     Console.WriteLine("Received mapname " + call.ReturnValue.Name);
-                }
-                else
-                {
-                    Console.WriteLine("GetCurrentMapInfo returned null");
+                    if (currentMap.ContainsKey("MX"))
+                        sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
+                    if (currentMap.ContainsKey("Name"))
+                    {
+                        string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
+                                                      .Replace("@Model.Country", currentMap["Country"])
+                                                      .Replace("@Model.Author", currentMap["Author"])
+                                                      .Replace("@Model.HasMXRecord", (currentMap.ContainsKey("MXTime") && currentMap["MXTime"]!=null)?"0":"1")
+                                                      .Replace("@Model.Time", currentMap["Time"]);
+                        sender.CallMethod(new SendDisplayManialinkPage(widgetRendered, 0, false), 1000);
+                    }
                 }
             }
-            else
-            {
-                Console.WriteLine("GetCurrentMapInfo had a fault");
-            }
-            if (currentMap.ContainsKey("MX"))
-                sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
-            if (currentMap.ContainsKey("name"))
-                Console.WriteLine(currentMap["name"] + " by " + currentMap["Author"]);
-            string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
-                                          .Replace("@Model.Country", currentMap["Country"])
-                                          .Replace("@Model.Author", currentMap["Author"])
-                                          .Replace("@Model.Time", currentMap["Time"]);
-            sender.CallMethod(new SendDisplayManialinkPage(widgetRendered, 0, false), 1000);
         }
 
         private void controller_PlayerChat(ServerController sender, ManiaPlanetPlayerChat methodCall)
@@ -108,16 +119,18 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             Dictionary<string, string> data = new Dictionary<string, string>();
             if (map != null)
             {
-                //Dictionary<string, string> mx = mxLookup(map.UId);
-                Dictionary<string, string> mx = null;
+                Dictionary<string, string> mx = mxLookup(map.UId);
+                //Dictionary<string, string> mx = null;
                 Dictionary<string, string> author = userLookup(map.Author);
                 data.Add("Author", author["nickname"]);
                 data.Add("Name", map.Name);
                 data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
-                data.Add("Country", Tools.AvatarByZone(""));
+                data.Add("Country", ManiaPlanet.Nations.GetNation(author["path"]).AvatarName);
                 if (mx != null)
                 {
                     data.Add("MX", mx["url"]);
+                    if (!string.IsNullOrEmpty(mx["ReplayWRTime"]))
+                        data.Add("MXTime", mx["ReplayWRTime"]);
                 }
             }
             else
@@ -133,11 +146,17 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             {
                 Dictionary<string, string> result = new Dictionary<string, string>();
                 string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
-                var json = new WebClient().DownloadString(apiUrl);
-                if (string.IsNullOrWhiteSpace(json))
-                    return null;
-                result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
-                result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+                using (WebClient client = new WebClient())
+                {
+                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
+                    string json = client.DownloadString(apiUrl);
+                    if (string.IsNullOrWhiteSpace(json))
+                        return null;
+                    result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
+                    result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+
+                }
+                //var json = new WebClient().DownloadString(apiUrl);
                 return result;
             }
             catch { return null; }
@@ -162,6 +181,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             if (string.IsNullOrWhiteSpace(json))
             {
                 result.Add("nickname", account);
+                result.Add("path", string.Empty);
             }
             else
             {
