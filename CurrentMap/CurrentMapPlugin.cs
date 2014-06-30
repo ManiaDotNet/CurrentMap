@@ -16,8 +16,11 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         private Dictionary<string, string> currentMap = new Dictionary<string, string>();
         private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange.com$l";
 
-        private string widget = @"<manialink version=""1"">
-    <frame posn=""110 90 5"">
+        private string testML = @"<manialink version=""1""><label text=""hallo"" textcolor=""00f"" /></manialink>";
+
+        private string testML2 = @"<manialink version=""1""><label text=""hallo2"" textcolor=""0f0"" posn=""0 10 0"" /></manialink>";
+
+        private string widget = @"<frame posn=""110 90 5"">
         <!-- <quad bgcolor=""444C"" sizen=""50 20"" /> -->
         <label text=""@Model.Name"" textsize=""2"" scale=""0.9"" posn=""3 -3 1"" sizen=""44 4"" style=""TextValueSmallSm"" />
 
@@ -30,10 +33,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             <quad image=""http://www.mania-exchange.com/Content/images/planet_mx_logo.png"" sizen=""3 3"" posn=""3 -15 1"" />
             <label text=""@Model.MXTime"" textsize=""2"" scale=""0.9"" posn=""7 -15 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
         </frame>
-    </frame>
-</manialink>";
-        private string testML = @"<manialink version=""1""><label text=""hallo"" textcolor=""00f"" /></manialink>";
-        private string testML2 = @"<manialink version=""1""><label text=""hallo2"" textcolor=""0f0"" posn=""0 10 0"" /></manialink>";
+    </frame>";
 
         public override bool Load(ServerController controller)
         {
@@ -46,16 +46,8 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
             this.controller = controller;
             this.controller.BeginMap += controller_BeginMap;
-            //this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
-            this.controller.BeginMatch += controller_BeginMatch;
-            this.controller.PlayerChat += controller_PlayerChat;
-            this.controller.EndMatch += controller_EndMatch;
+            this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
             return true;
-        }
-
-        void controller_EndMatch(ServerController sender, ManiaPlanetEndMatch methodCall)
-        {
-            sender.CallMethod(new SendHideManialinkPage(), 1000);
         }
 
         public override void Run()
@@ -70,37 +62,24 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
         {
             currentMap = getCurrentMap(methodCall.Map);
-        }
-
-        private void controller_BeginMatch(ServerController sender, ManiaPlanetBeginMatch methodCall)
-        {
-            GetCurrentMapInfo call = new GetCurrentMapInfo();
-
-            if (!call.HadFault)
+            Console.WriteLine("Received mapname " + methodCall.Map.Name);
+            if (currentMap.ContainsKey("MX"))
+                sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
+            if (currentMap.ContainsKey("Name"))
             {
-                if (call.ReturnValue != null)
-                {
-                    currentMap = getCurrentMap(call.ReturnValue);
-                    Console.WriteLine("Received mapname " + call.ReturnValue.Name);
-                    if (currentMap.ContainsKey("MX"))
-                        sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
-                    if (currentMap.ContainsKey("Name"))
-                    {
-                        string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
-                                                      .Replace("@Model.Country", currentMap["Country"])
-                                                      .Replace("@Model.Author", currentMap["Author"])
-                                                      .Replace("@Model.HasMXRecord", (currentMap.ContainsKey("MXTime") && currentMap["MXTime"]!=null)?"0":"1")
-                                                      .Replace("@Model.Time", currentMap["Time"]);
-                        sender.CallMethod(new SendDisplayManialinkPage(widgetRendered, 0, false), 1000);
-                    }
-                }
+                string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
+                                              .Replace("@Model.Country", currentMap["Country"])
+                                              .Replace("@Model.Author", currentMap["Author"])
+                                              .Replace("@Model.HasMXRecord", (currentMap.ContainsKey("MXTime") && currentMap["MXTime"] != null) ? "0" : "1")
+                                              .Replace("@Model.Time", currentMap["Time"]);
+
+                clientManialinks["*"] = widgetRendered;
             }
         }
 
-        private void controller_PlayerChat(ServerController sender, ManiaPlanetPlayerChat methodCall)
+        private void controller_EndMap(ServerController sender, ManiaPlanetEndMap methodCall)
         {
-            // test without beginning match
-            controller_BeginMatch(sender, null);
+            clientManialinks.Remove("*");
         }
 
         private void controller_PlayerCheckpoint(ServerController sender, TrackManiaPlayerCheckpoint methodCall)
@@ -142,24 +121,32 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
         private Dictionary<string, string> mxLookup(string uid)
         {
-            try
-            {
-                Dictionary<string, string> result = new Dictionary<string, string>();
-                string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
-                using (WebClient client = new WebClient())
-                {
-                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
-                    string json = client.DownloadString(apiUrl);
-                    if (string.IsNullOrWhiteSpace(json))
-                        return null;
-                    result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
-                    result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+            Dictionary<string, string> result = new Dictionary<string, string>();
 
+            bool success = false;
+
+            do
+            {
+                try
+                {
+                    string apiUrl = "http://api.mania-exchange.com/tm/tracks/" + uid;
+                    using (WebClient client = new WebClient())
+                    {
+                        client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
+                        string json = client.DownloadString(apiUrl);
+                        if (string.IsNullOrWhiteSpace(json))
+                            return null;
+                        result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
+                        result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
+                    }
+                    success = true;
+                    //var json = new WebClient().DownloadString(apiUrl);
                 }
-                //var json = new WebClient().DownloadString(apiUrl);
-                return result;
+                catch { }
             }
-            catch { return null; }
+            while (!success);
+
+            return result;
         }
 
         private void onMapStart(MapInfoStruct mapData)
@@ -176,17 +163,31 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         private Dictionary<string, string> userLookup(string account)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
-            string apiUrl = "http://prprod.de/mpnicks.php?player=" + account;
-            var json = new WebClient().DownloadString(apiUrl);
-            if (string.IsNullOrWhiteSpace(json))
+
+            bool success = false;
+
+            do
             {
-                result.Add("nickname", account);
-                result.Add("path", string.Empty);
+                try
+                {
+                    string apiUrl = "http://prprod.de/mpnicks.php?player=" + account;
+                    var json = new WebClient().DownloadString(apiUrl);
+                    if (string.IsNullOrWhiteSpace(json))
+                    {
+                        result.Add("nickname", account);
+                        result.Add("path", string.Empty);
+                    }
+                    else
+                    {
+                        result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    }
+
+                    success = true;
+                }
+                catch { }
             }
-            else
-            {
-                result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            }
+            while (!success);
+
             return result;
         }
     }
