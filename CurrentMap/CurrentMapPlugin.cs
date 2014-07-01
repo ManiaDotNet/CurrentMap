@@ -1,38 +1,26 @@
 ﻿using ManiaNet.DedicatedServer.XmlRpc.Methods;
 using ManiaNet.DedicatedServer.XmlRpc.Structs;
 using Newtonsoft.Json;
+using RazorEngine;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 {
     [RegisterPlugin("CurrentMap", author: "zocka", name: "Current Map")]
     public class CurrentMapPlugin : ControllerPlugin
     {
+        private readonly string widget = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap.Widget.csxml")).ReadToEnd();
         private Dictionary<string, string> currentMap = new Dictionary<string, string>();
-        private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange.com$l";
-
-        private string widget = @"<frame posn=""110 90 5"">
-        <quad bgcolor=""444C"" sizen=""50 20"" />
-        <label text=""@Model.Name"" textsize=""2"" scale=""0.9"" posn=""3 -3 1"" sizen=""44 4"" style=""TextValueSmallSm"" />
-
-        <quad sizen=""3 3"" posn=""3 -7 1"" image=""file://@Model.Country"" />
-        <label text=""@Model.Author"" textsize=""2"" scale=""0.9"" posn=""7 -7 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
-
-        <quad style=""MedalsBig"" substyle=""MedalNadeo"" sizen=""3 3"" posn=""3 -11 1"" />
-        <label text=""@Model.Time"" textsize=""2"" scale=""0.9"" posn=""7 -11 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
-        <frame hidden=""@Model.HasMXRecord"">
-            <quad image=""http://www.mania-exchange.com/Content/images/planet_mx_logo.png"" sizen=""3 3"" posn=""3 -15 1"" />
-            <label text=""@Model.MXTime"" textsize=""2"" scale=""0.9"" posn=""7 -15 1"" sizen=""44 4"" style=""TextCardSmallScores2"" />
-        </frame>
-    </frame>";
+        private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange$l!";
 
         public override bool Load(ServerController controller)
         {
             controller.BeginMap += controller_BeginMap;
-            controller.PlayerCheckpoint += controller_PlayerCheckpoint;
 
             GetCurrentMapInfo getCurrentMapInfoCall = new GetCurrentMapInfo();
             if (controller.CallMethod(getCurrentMapInfoCall, 1000) && !getCurrentMapInfoCall.HadFault)
@@ -60,28 +48,16 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             clientManialinks.Clear();
         }
 
-        private void controller_PlayerCheckpoint(ServerController sender, TrackManiaPlayerCheckpoint methodCall)
-        {
-            string msg = "CP #" + methodCall.CheckpointIndex.ToString() + ": " + methodCall.TimeOrScore.ToString();
-            Console.WriteLine(msg);
-            sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
-        }
-
         private void displayWidget(ServerController controller, MapInfoStruct map)
         {
             currentMap = getCurrentMap(map);
             Console.WriteLine("Received mapname " + map.Name);
-            if (currentMap.ContainsKey("MX"))
-                controller.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
             if (currentMap.ContainsKey("Name"))
             {
-                string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
-                                              .Replace("@Model.Country", currentMap["Country"])
-                                              .Replace("@Model.Author", currentMap["Author"])
-                                              .Replace("@Model.HasMXRecord", (currentMap.ContainsKey("MXTime") && currentMap["MXTime"] != null) ? "0" : "1")
-                                              .Replace("@Model.Time", currentMap["Time"]);
+                if (currentMap.ContainsKey("MX"))
+                    controller.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.Url", currentMap["MX"])), 1000);
 
-                clientManialinks["*"] = widgetRendered;
+                clientManialinks["*"] = WebUtility.HtmlDecode(Razor.Parse(widget, currentMap, "currentMapWidget"));
                 onClientManialinksChanged();
             }
         }

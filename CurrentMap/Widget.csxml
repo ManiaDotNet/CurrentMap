@@ -1,0 +1,14 @@
+﻿<frame posn="110 90 5">
+	<quad bgcolor="444C" sizen="50 20" />
+	<label text="@Model["Name"]" textsize="2" scale="0.9" posn="3 -3 1" sizen="44 4" style="TextValueSmallSm" />
+
+	<quad sizen="3 3" posn="3 -7 1" image="file://@Model["Country"]" />
+	<label text="@Model["Author"]" textsize="2" scale="0.9" posn="7 -7 1" sizen="44 4" style="TextCardSmallScores2" />
+
+	<quad style="MedalsBig" substyle="MedalNadeo" sizen="3 3" posn="3 -11 1" />
+	<label text="@Model["Time"]" textsize="2" scale="0.9" posn="7 -11 1" sizen="44 4" style="TextCardSmallScores2" />
+	<frame hidden="@Raw(Model.ContainsKey("MXTime") && Model["MXTime"] != null ? "0" : "1")">
+		<quad image="http://www.mania-exchange.com/Content/images/planet_mx_logo.png" sizen="3 3" posn="3 -15 1" />
+		<label text="@Raw(Model.ContainsKey("MXTime") && Model["MXTime"] != null ? Model["MXTime"] : "")" textsize="2" scale="0.9" posn="7 -15 1" sizen="44 4" style="TextCardSmallScores2" />
+	</frame>
+</frame>

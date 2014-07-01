@@ -7,7 +7,7 @@
     <ProjectGuid>{037ACEE9-84B0-4994-B223-E550294539EA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CurrentMap</RootNamespace>
+    <RootNamespace>ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap</RootNamespace>
     <AssemblyName>CurrentMap</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="RazorEngine, Version=3.4.1.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL" />
     <Reference Include="SharpPlugins">
       <HintPath>..\SharpPlugins.dll</HintPath>
     </Reference>
@@ -39,9 +40,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="XmlRpc">
       <HintPath>..\XmlRpc.dll</HintPath>
@@ -64,6 +63,9 @@
       <Project>{09cedbce-8dd8-4831-bb1a-430fdcd77517}</Project>
       <Name>ManiaNet.ManiaPlanet</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Widget.csxml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
