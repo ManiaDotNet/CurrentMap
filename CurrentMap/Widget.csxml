@@ -1,5 +1,5 @@
 ﻿<frame posn="110 90 5">
-	<quad bgcolor="444C" sizen="50 20" />
+	<quad style="BgsPlayerCard" substyle="BgPlayerName" sizen="50 20" />
 	<label text="@Model["Name"]" textsize="2" scale="0.9" posn="3 -3 1" sizen="44 4" style="TextValueSmallSm" />
 
 	<quad sizen="3 3" posn="3 -7 1" image="file://@Model["Country"]" />

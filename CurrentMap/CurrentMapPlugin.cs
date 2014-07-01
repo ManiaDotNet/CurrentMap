@@ -14,9 +14,8 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
     [RegisterPlugin("CurrentMap", author: "zocka", name: "Current Map")]
     public class CurrentMapPlugin : ControllerPlugin
     {
+        private readonly string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange$l!";
         private readonly string widget = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap.Widget.csxml")).ReadToEnd();
-        private Dictionary<string, string> currentMap = new Dictionary<string, string>();
-        private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange$l!";
 
         public override bool Load(ServerController controller)
         {
@@ -50,7 +49,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
         private void displayWidget(ServerController controller, MapInfoStruct map)
         {
-            currentMap = getCurrentMap(map);
+            var currentMap = getCurrentMap(map);
 
             if (currentMap.ContainsKey("Name"))
             {
@@ -65,26 +64,25 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         private Dictionary<string, string> getCurrentMap(MapInfoStruct map)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
-            if (map != null)
+
+            if (map == null)
+                return data;
+
+            Dictionary<string, string> mx = mxLookup(map.UId);
+            Dictionary<string, string> author = userLookup(map.Author);
+
+            data.Add("Author", author["nickname"]);
+            data.Add("Name", map.Name);
+            data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
+            data.Add("Country", ManiaPlanet.Nations.GetNation(author["path"]).AvatarName);
+
+            if (mx != null)
             {
-                Dictionary<string, string> mx = mxLookup(map.UId);
-                //Dictionary<string, string> mx = null;
-                Dictionary<string, string> author = userLookup(map.Author);
-                data.Add("Author", author["nickname"]);
-                data.Add("Name", map.Name);
-                data.Add("Time", Tools.FormatMilliseconds(map.AuthorTime));
-                data.Add("Country", ManiaPlanet.Nations.GetNation(author["path"]).AvatarName);
-                if (mx != null)
-                {
-                    data.Add("MX", mx["url"]);
-                    if (!string.IsNullOrEmpty(mx["ReplayWRTime"]))
-                        data.Add("MXTime", mx["ReplayWRTime"]);
-                }
+                data.Add("MX", mx["url"]);
+                if (!string.IsNullOrEmpty(mx["ReplayWRTime"]))
+                    data.Add("MXTime", mx["ReplayWRTime"]);
             }
-            else
-            {
-                Console.WriteLine("received map struct was null");
-            }
+
             return data;
         }
 
