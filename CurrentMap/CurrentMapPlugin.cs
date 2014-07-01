@@ -11,17 +11,11 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
     [RegisterPlugin("CurrentMap", author: "zocka", name: "Current Map")]
     public class CurrentMapPlugin : ControllerPlugin
     {
-        private ServerController controller;
-
         private Dictionary<string, string> currentMap = new Dictionary<string, string>();
         private string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange.com$l";
 
-        private string testML = @"<manialink version=""1""><label text=""hallo"" textcolor=""00f"" /></manialink>";
-
-        private string testML2 = @"<manialink version=""1""><label text=""hallo2"" textcolor=""0f0"" posn=""0 10 0"" /></manialink>";
-
         private string widget = @"<frame posn=""110 90 5"">
-        <!-- <quad bgcolor=""444C"" sizen=""50 20"" /> -->
+        <quad bgcolor=""444C"" sizen=""50 20"" />
         <label text=""@Model.Name"" textsize=""2"" scale=""0.9"" posn=""3 -3 1"" sizen=""44 4"" style=""TextValueSmallSm"" />
 
         <quad sizen=""3 3"" posn=""3 -7 1"" image=""file://@Model.Country"" />
@@ -37,16 +31,13 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
         public override bool Load(ServerController controller)
         {
-            Action<ManiaPlanetPlayerChat> unloadAction = playerChatCall => controller.CallMethod(new SendHideManialinkPage(), 1000);
-            controller.RegisterCommand("unload", unloadAction);
-            Action<ManiaPlanetPlayerChat> testMLAction = playerChatCall => controller.CallMethod(new SendDisplayManialinkPage(testML, 0, false), 1000);
-            controller.RegisterCommand("testml", testMLAction);
-            Action<ManiaPlanetPlayerChat> testMLAction2 = playerChatCall => controller.CallMethod(new SendDisplayManialinkPage(testML2, 1000, false), 1000);
-            controller.RegisterCommand("testml2", testMLAction2);
+            controller.BeginMap += controller_BeginMap;
+            controller.PlayerCheckpoint += controller_PlayerCheckpoint;
 
-            this.controller = controller;
-            this.controller.BeginMap += controller_BeginMap;
-            this.controller.PlayerCheckpoint += controller_PlayerCheckpoint;
+            GetCurrentMapInfo getCurrentMapInfoCall = new GetCurrentMapInfo();
+            if (controller.CallMethod(getCurrentMapInfoCall, 1000) && !getCurrentMapInfoCall.HadFault)
+                displayWidget(controller, getCurrentMapInfoCall.ReturnValue);
+
             return true;
         }
 
@@ -61,25 +52,12 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
 
         private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
         {
-            currentMap = getCurrentMap(methodCall.Map);
-            Console.WriteLine("Received mapname " + methodCall.Map.Name);
-            if (currentMap.ContainsKey("MX"))
-                sender.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
-            if (currentMap.ContainsKey("Name"))
-            {
-                string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
-                                              .Replace("@Model.Country", currentMap["Country"])
-                                              .Replace("@Model.Author", currentMap["Author"])
-                                              .Replace("@Model.HasMXRecord", (currentMap.ContainsKey("MXTime") && currentMap["MXTime"] != null) ? "0" : "1")
-                                              .Replace("@Model.Time", currentMap["Time"]);
-
-                clientManialinks["*"] = widgetRendered;
-            }
+            displayWidget(sender, methodCall.Map);
         }
 
         private void controller_EndMap(ServerController sender, ManiaPlanetEndMap methodCall)
         {
-            clientManialinks.Remove("*");
+            clientManialinks.Clear();
         }
 
         private void controller_PlayerCheckpoint(ServerController sender, TrackManiaPlayerCheckpoint methodCall)
@@ -89,8 +67,23 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             sender.CallMethod(new ChatSendToLogin(msg, methodCall.PlayerLogin), 1000);
         }
 
-        private void displayWidget()
+        private void displayWidget(ServerController controller, MapInfoStruct map)
         {
+            currentMap = getCurrentMap(map);
+            Console.WriteLine("Received mapname " + map.Name);
+            if (currentMap.ContainsKey("MX"))
+                controller.CallMethod(new ChatSendServerMessage(mxMessage.Replace("@Model.Name", currentMap["Name"]).Replace("@Model.MX", currentMap["MX"])), 1000);
+            if (currentMap.ContainsKey("Name"))
+            {
+                string widgetRendered = widget.Replace("@Model.Name", currentMap["Name"])
+                                              .Replace("@Model.Country", currentMap["Country"])
+                                              .Replace("@Model.Author", currentMap["Author"])
+                                              .Replace("@Model.HasMXRecord", (currentMap.ContainsKey("MXTime") && currentMap["MXTime"] != null) ? "0" : "1")
+                                              .Replace("@Model.Time", currentMap["Time"]);
+
+                clientManialinks["*"] = widgetRendered;
+                onClientManialinksChanged();
+            }
         }
 
         private Dictionary<string, string> getCurrentMap(MapInfoStruct map)
@@ -147,17 +140,6 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
             while (!success);
 
             return result;
-        }
-
-        private void onMapStart(MapInfoStruct mapData)
-        {
-            Dictionary<string, string> mx = mxLookup(mapData.UId);
-            if (mx != null)
-            {
-                //mxMessage = Razor.Parse(mxMessage, new { Map = mapData.Name, mxLink = mx["url"] });
-                controller.CallMethod(new ChatSendServerMessage(mxMessage), 1000);
-            }
-            displayWidget();
         }
 
         private Dictionary<string, string> userLookup(string account)
