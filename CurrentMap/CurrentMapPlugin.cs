@@ -51,7 +51,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         private void displayWidget(ServerController controller, MapInfoStruct map)
         {
             currentMap = getCurrentMap(map);
-            Console.WriteLine("Received mapname " + map.Name);
+
             if (currentMap.ContainsKey("Name"))
             {
                 if (currentMap.ContainsKey("MX"))
@@ -103,13 +103,14 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                     {
                         client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
                         string json = client.DownloadString(apiUrl);
+
                         if (string.IsNullOrWhiteSpace(json))
-                            return null;
+                            return result;
+
                         result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json.Substring(1, json.Length - 2));
                         result.Add("url", "tm.mania-exchange.com/tracks/" + result["TrackID"]);
                     }
                     success = true;
-                    //var json = new WebClient().DownloadString(apiUrl);
                 }
                 catch { }
             }
@@ -130,6 +131,7 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                 {
                     string apiUrl = "http://prprod.de/mpnicks.php?player=" + account;
                     var json = new WebClient().DownloadString(apiUrl);
+
                     if (string.IsNullOrWhiteSpace(json))
                     {
                         result.Add("nickname", account);
