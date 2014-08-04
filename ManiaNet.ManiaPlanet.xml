@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ManiaNet.ManiaPlanet</name>
+    </assembly>
+    <members>
+        <member name="T:ManiaNet.ManiaPlanet.XmlEntities.Nation">
+            <summary>
+            Represents a nation-entity from the NationsList.xml
+            </summary>
+        </member>
+        <member name="M:ManiaNet.ManiaPlanet.XmlEntities.Nation.ParseXml(System.Xml.Linq.XElement)">
+            <summary>
+            Fills the properties with the information from the given nation-XElement.
+            </summary>
+            <param name="xElement">The nation-XElement containing the information.</param>
+            <returns>Whether it was successul or not.</returns>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Nation.AvatarName">
+            <summary>
+            Gets the name (path) of the nation's avatar, relative to the UserData folder.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Nation.Hymn">
+            <summary>
+            Gets the Hymn of the Nation. Empty string for all.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Nation.Name">
+            <summary>
+            Gets the name of the nation.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Nation.Path">
+            <summary>
+            Gets the zone path. World|&lt;Continent&gt;|&lt;Nation&gt;
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Nation.Skin">
+            <summary>
+            Gets the informations for the nation's skin.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.ManiaPlanet.Nations">
+            <summary>
+            Contains static helpers and information about the various Nations.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.ManiaPlanet.Nations.GetNation(System.String)">
+            <summary>
+            Gets the nation-information for the nation in the given zone path.
+            </summary>
+            <param name="path">The zone path to get the nation-information for.</param>
+            <returns>The nation-information for the given zone path.</returns>
+        </member>
+        <member name="M:ManiaNet.ManiaPlanet.Nations.GetNationPath(System.String)">
+            <summary>
+            Takes a zone path and stript it to be only a path to the nation.
+            </summary>
+            <param name="path">The zone path to strip.</param>
+            <returns>The path to the nation.</returns>
+        </member>
+        <member name="T:ManiaNet.ManiaPlanet.XmlEntities.Skin">
+            <summary>
+            Represents a skin-entity that's part of the nation-entities in the NationsList.xml
+            </summary>
+        </member>
+        <member name="M:ManiaNet.ManiaPlanet.XmlEntities.Skin.ParseXml(System.Xml.Linq.XElement)">
+            <summary>
+            Fills the properties with the information from the given skin-XElement.
+            </summary>
+            <param name="xElement">The skin-XElement containing the information.</param>
+            <returns>Whether it was successul or not.</returns>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Skin.Author">
+            <summary>
+            Gets the author of the skin.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Skin.Collection">
+            <summary>
+            Gets what collection the skin is part of.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Skin.Id">
+            <summary>
+            Gets an identifier describing what kind of car it is.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.ManiaPlanet.XmlEntities.Skin.Name">
+            <summary>
+            Gets the name (path) of the skin, relative to the UserData folder.
+            </summary>
+        </member>
+    </members>
+</doc>

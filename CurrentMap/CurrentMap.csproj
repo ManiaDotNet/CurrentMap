@@ -16,23 +16,26 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\ManiaNet.Console\bin\Debug\plugins\</OutputPath>
+    <OutputPath>..\..\ServerController\ManiaNet.DedicatedServer.Controller.ConsoleApp\bin\Debug\plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\ManiaNet.Console\bin\Release\plugins\</OutputPath>
+    <OutputPath>..\..\ServerController\ManiaNet.DedicatedServer.Controller.ConsoleApp\bin\Release\plugins\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
-    <Reference Include="RazorEngine, Version=3.4.1.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL" />
+    <Reference Include="RazorEngine">
+      <HintPath>..\packages\RazorEngine.3.4.1\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
     <Reference Include="SharpPlugins">
       <HintPath>..\SharpPlugins.dll</HintPath>
     </Reference>
@@ -46,24 +49,22 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\XmlRpc.1.1\lib\XmlRpc.dll</HintPath>
     </Reference>
+    <Reference Include="ManiaNet.DedicatedServer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ManiaNet.DedicatedServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ManiaNet.DedicatedServer.Controller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ManiaNet.DedicatedServer.Controller.dll</HintPath>
+    </Reference>
+    <Reference Include="ManiaNet.ManiaPlanet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ManiaNet.ManiaPlanet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CurrentMapPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ManiaNet.DedicatedServer.Controller\ManiaNet.DedicatedServer.Controller.csproj">
-      <Project>{9f4fdca6-1cc3-4e85-864d-20d631461776}</Project>
-      <Name>ManiaNet.DedicatedServer.Controller</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ManiaNet.DedicatedServer\ManiaNet.DedicatedServer.csproj">
-      <Project>{086bb4ea-e79a-482e-84fc-4ea256ecf4b4}</Project>
-      <Name>ManiaNet.DedicatedServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ManiaNet.ManiaPlanet\ManiaNet.ManiaPlanet.csproj">
-      <Project>{09cedbce-8dd8-4831-bb1a-430fdcd77517}</Project>
-      <Name>ManiaNet.ManiaPlanet</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Widget.csxml" />

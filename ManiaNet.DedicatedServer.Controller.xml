@@ -1,0 +1,1167 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ManiaNet.DedicatedServer.Controller</name>
+    </assembly>
+    <members>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Configuration.Config">
+            <summary>
+            Abstract base class for Configurations.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2">
+            <summary>
+            Abstract base class for config builders.
+            </summary>
+            <typeparam name="TConfig">The type of the config that this builder is for. Should be the one of the Config-derived class that this builder is in.</typeparam>
+            <typeparam name="TConfigBuilder">The type of the deriving builder.</typeparam>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.Load">
+            <summary>
+            Loads the content of a builder instance from the config on disk, or, if that fails, loads it from the Assembly resources and also saves it to disk.
+            </summary>
+            <returns>The builder instance containing the loaded content.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.Save">
+            <summary>
+            Saves the current internal state of the builder to disk.
+            </summary>
+            <returns>Whether it was successful or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.generateXml">
+            <summary>
+            Generates a XElement storing the information in this builder.
+            </summary>
+            <returns>The XElement storing the information.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.parseXml(System.Xml.Linq.XElement)">
+            <summary>
+            Fills the properties of the builder with the information contained in the given XElement.
+            </summary>
+            <param name="xElement">The XElement containing the information.</param>
+            <returns>Whether it was successful or not.</returns>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.Config">
+            <summary>
+            Gets a *copy* of the internal state of the builder.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.config">
+            <summary>
+            The internal state of the builder.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.configFileName">
+            <summary>
+            Gets the name of the config file.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.configFilePath">
+            <summary>
+            Gets the path to the config file.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.Config.BuilderBase`2.configResource">
+            <summary>
+            Gets the identifier for the dll resource containing the default config.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig">
+            <summary>
+            Represents a configuration for the server controller.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.AllowManialinkHiding">
+            <summary>
+            Gets whether clients are allowed to disable the display of manialinks from certain plugins.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Login">
+            <summary>
+            Gets the Login that the controller will use to authenticate with the xml rpc server.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.ManialinkRefreshInterval">
+            <summary>
+            Gets the minimum number of milliseconds to wait before refreshing the Manialink that is displayed for clients.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Password">
+            <summary>
+            Gets the Password that the controller will use to authenticate with the xml rpc server.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.PluginFolders">
+            <summary>
+            Gets the path(s) to the folders used to load plugins from.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder">
+            <summary>
+            For building an instance of the <see cref="T:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig"/> class.
+            </summary>
+        </member>
+        <member name="F:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.internalConfig">
+            <summary>
+            The internal state of the builder.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig"/> class with the content from disk or default.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.AllowManialinkHiding">
+            <summary>
+            Gets or sets whether clients are allowed to disable the display of manialinks from certain plugins.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.Login">
+            <summary>
+            Gets or sets the Login that the controller will use to authenticate with the xml rpc server.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.ManialinkRefreshInterval">
+            <summary>
+            Gets or sets the minimum number of milliseconds to wait before refreshing the Manialink that is displayed for clients.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.Password">
+            <summary>
+            Gets or sets the Password that the controller will use to authenticate with the xml rpc server.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.PluginFolders">
+            <summary>
+            Gets or sets the path(s) to the folders used to load plugins from.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.config">
+            <summary>
+            The internal state of the builder.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.configFileName">
+            <summary>
+            Gets the name of the config file.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.configResource">
+            <summary>
+            Gets the identifier for the dll resource containing the default config.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin">
+            <summary>
+            Abstract base class for all ControllerPlugins.
+            </summary>
+        </member>
+        <member name="F:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.clientManialinks">
+            <summary>
+            Dictionary containing the manialink elements that the plugin wants to display.
+            <para/>
+            Key is the login of the client that the elements are for, Value is a string containing the elements.
+            <para/>
+            * means any client. This has a lower precedence than the actual login.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.Load(ManiaNet.DedicatedServer.Controller.ServerController)">
+            <summary>
+            Gets called when the plugin is loaded.
+            Use this to add your methods to the controller's events and load your saved data.
+            </summary>
+            <param name="controller">The controller loading the plugin.</param>
+            <returns>Whether it loaded successfully or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.Run">
+            <summary>
+            The main method of the plugin.
+            Gets run in its own thread by the controller and should stop gracefully on a <see cref="T:System.Threading.ThreadAbortException"/>.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.Unload">
+            <summary>
+            Gets called when the plugin is unloaded.
+            Use this to save your data.
+            </summary>
+            <returns>Whether it unloaded successfully or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.onClientManialinksChanged">
+            <summary>
+            Used by the deriving plugins to fire the ClientManialinksChanged event.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.ClientManialinks">
+            <summary>
+            Gets a readonly dictionary containing the manialink elements that the plugin wants to display.
+            <para/>
+            Key is the login of the client that the elements are for, Value is a string containing the elements.
+            <para/>
+            * means any client. This has a lower precedence than the actual login.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.ClientManialinksChanged">
+            <summary>
+            Fires when a change was made to the ClientManialinks dictionary.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.LocalRecords.Load(ManiaNet.DedicatedServer.Controller.ServerController)">
+            <summary>
+            Gets called when the plugin is loaded.
+            Use this to add your methods to the controller's events and load your saved data.
+            </summary>
+            <param name="controller">The controller loading the plugin.</param>
+            <returns>Whether it loaded successfully or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.LocalRecords.Run">
+            <summary>
+            The main method of the plugin.
+            Gets run in its own thread by the controller and should stop gracefully on a <see cref="T:System.Threading.ThreadAbortException"/>.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.LocalRecords.Unload">
+            <summary>
+            Gets called when the plugin is unloaded.
+            Use this to save your data.
+            </summary>
+            <returns>Whether it unloaded successfully or not.</returns>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Plugins.Record.Checkpoints">
+            <summary>
+            A list of the checkpoint times during the run.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Plugins.Record.Player">
+            <summary>
+            The player's account who drove the record.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Plugins.Record.Rank">
+            <summary>
+            The rank of the record compared to other records for the map.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Plugins.Record.Time">
+            <summary>
+            The time the player achieved.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Plugins.RecordDiff">
+            <summary>
+            Bundles the difference between an older and a newer record time, providing the respective data
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.RecordSet.AddRecord(ManiaNet.DedicatedServer.Controller.Plugins.Record)">
+            <summary>
+            Adds a record to the sets, updates all ranks.
+            </summary>
+            <param name="record">A Record object containing Player, Finishtime and Checkpoint times.</param>
+            <returns>True, if record could be saved, false if not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.RecordSet.GetRecord(System.String)">
+            <summary>
+            Returns the local best time for a player if available.
+            </summary>
+            <param name="player">The account of the player to look for.</param>
+            <returns>A Record object if the player has a local best, null if not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.RecordSet.WriteRecords">
+            <summary>
+            Writes records in set back to database
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.RecordSet.setupDB">
+            <summary>
+            Creates the databae schema if it does not exist
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.ServerController">
+            <summary>
+            Represents the main component of the controller, that handles all the incomming callbacks, command registrations of plugins, etc.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.#ctor(XmlRpc.IXmlRpcClient,ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig)">
+            <summary>
+            Creates a new instance of the <see cref="T:ManiaNet.DedicatedServer.Controller.ServerController"/> class with the given XmlRpc client and config.
+            </summary>
+            <param name="xmlRpcClient">The client used to communicate with the server.</param>
+            <param name="config">The configuration for the controller.</param>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.#ctor(XmlRpc.IXmlRpcClient)">
+            <summary>
+            Creates a new instance of the <see cref="T:ManiaNet.DedicatedServer.Controller.ServerController"/> class with the given XmlRpc client and the config loaded from disk/default.
+            </summary>
+            <param name="xmlRpcClient">The client used to communicate with the server.</param>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.CallMethod``2(XmlRpc.Methods.XmlRpcMethodCall{``0,``1},System.Int32)">
+            <summary>
+            Sends a method call to the server and waits a maximum of the given timeout before returning whether the call returned (regardless of whether with a fault or not).
+            </summary>
+            <typeparam name="TReturn">The method call's returned XmlRpcType.</typeparam>
+            <typeparam name="TReturnBase">The method call's type of the returned value.</typeparam>
+            <param name="methodCall">The method call to be executed.</param>
+            <param name="timeout">The maximum time in milliseconds to wait for a response.</param>
+            <returns>Whether the call was returned (regardless of whether successful or not).</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.Start">
+            <summary>
+            Starts the controller.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.Stop">
+            <summary>
+            Stops the controller.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.awaitResponse(System.UInt32,System.Int32)">
+            <summary>
+            Waits a maximum of timeout ms for the response to come in. If it hasn't come in by then, it returns an empty string.
+            </summary>
+            <param name="handle">The handle of the method call for which the response is wanted.</param>
+            <param name="timeout">The maximum number of ms that it waits before returning an empty string.</param>
+            <returns>The xml formatted method response or an empty string if it took more than timeout ms.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.IsRegisteredCommand(System.String)">
+            <summary>
+            Finds out whether the given command identifier is already taken.
+            </summary>
+            <param name="cmdName">The command identifier to check the availability for.</param>
+            <returns>Whether it's taken or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.RegisterCommand(System.String,System.Action{ManiaNet.DedicatedServer.XmlRpc.Methods.ManiaPlanetPlayerChat})">
+            <summary>
+            Trys to register an action for a given command.
+            <para/>
+            If a message is an registered command, it doesn't activate the PlayerChat event.
+            </summary>
+            <param name="cmdName">The command identifier. Will be stored in lower case.</param>
+            <param name="cmdAction">The action to be performed when the command is received. The parameter is the full message parameters.<para/>
+            If you're planning to unregister the command, you have to store the action.</param>
+            <returns>Whether it was successfully added or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.UnregisterCommand(System.String,System.Action{ManiaNet.DedicatedServer.XmlRpc.Methods.ManiaPlanetPlayerChat})">
+            <summary>
+            Trys to unregister a command, given its identifier and action.
+            </summary>
+            <param name="cmdName">The command identifier.</param>
+            <param name="cmdAction">The that was performed when the command was received. Has to be the same (reference) action as the one registered.</param>
+            <returns>Whether there's now no command with the given identifier registered.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.IsPluginLoaded(System.String)">
+            <summary>
+            Gets whether the plugin with the given identifier is loaded or not.
+            </summary>
+            <param name="identifier">The identifier to check.</param>
+            <returns>Whether the plugin is loaded.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.ReloadPlugins">
+            <summary>
+            Performs a stop-unload-load-start cycle on the plugins.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.ServerController.Clients">
+            <summary>
+            Gets the logins of the connected clients.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.ServerController.Configuration">
+            <summary>
+            Gets the configuration of the controller.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.ServerController.RegisteredCommands">
+            <summary>
+            Gets the registered commands (all in lower case).
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.BeginMap">
+            <summary>
+            Fires when a map begins.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.BeginMatch">
+            <summary>
+            Fires when a match begins.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.BillUpdated">
+            <summary>
+            Fires when a bill is updated.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.Echo">
+            <summary>
+            Fires when the <see cref="T:ManiaNet.DedicatedServer.XmlRpc.Methods.Echo"/> method is called by another controller.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.EndMap">
+            <summary>
+            Fires when a map ended.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.EndMatch">
+            <summary>
+            Fires when a match ended.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.MapListModified">
+            <summary>
+            Fires when the map playlist is modified.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerAlliesChanged">
+            <summary>
+            Fires when a player changes allies.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerChat">
+            <summary>
+            Fires when a client sent a chat message.
+            <para/>
+            Doesn't get fired when the message is a registered command.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerCheckpoint">
+            <summary>
+            Fires when a player drives through a checkpoint.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerConnect">
+            <summary>
+            Fires when a client connected to the server.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerDisconnect">
+            <summary>
+            Fires when a client disconnected from the server.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerFinish">
+            <summary>
+            Fires when a player finishes the map.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerIncoherence">
+            <summary>
+            Fires when a player sends incoherent data.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerInfoChanged">
+            <summary>
+            Fires when a client's info changed.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.PlayerManialinkPageAnswer">
+            <summary>
+            Fires when a client answered a mnailink page.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.ServerStart">
+            <summary>
+            Fires when the server is started.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.ServerStop">
+            <summary>
+            Fires when the server is stopped.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.StatusChanged">
+            <summary>
+            Fires when the server's status changed.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.TunnelDataReceived">
+            <summary>
+            Fires when the server receives tunneled data.
+            </summary>
+        </member>
+        <member name="E:ManiaNet.DedicatedServer.Controller.ServerController.VoteUpdated">
+            <summary>
+            Fires when the current vote's state changes.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.ServerController.ServerCallbackEventHandler`1">
+            <summary>
+            Delegate for the various server callback events.
+            </summary>
+            <typeparam name="TMethodCall">The type representing the called method.</typeparam>
+            <param name="sender">The ServerController that fired the event.</param>
+            <param name="methodCall">The method call information.</param>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Database.Client">
+            <summary>
+            Represents an entry in the Clients table.
+            </summary>
+        </member>
+        <member name="T:SQLite.SQLiteConnection">
+            <summary>
+            Represents an open connection to a SQLite database.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructs a new SQLiteConnection and opens a SQLite database specified by databasePath.
+            </summary>
+            <param name="databasePath">
+            Specifies the path to the database file.
+            </param>
+            <param name="storeDateTimeAsTicks">
+            Specifies whether to store DateTime properties as ticks (true) or strings (false). You
+            absolutely do want to store them as Ticks in all new projects. The default of false is
+            only here for backwards compatibility. There is a *significant* speed advantage, with no
+            down sides, when setting storeDateTimeAsTicks = true.
+            </param>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.#ctor(System.String,SQLite.SQLiteOpenFlags,System.Boolean)">
+            <summary>
+            Constructs a new SQLiteConnection and opens a SQLite database specified by databasePath.
+            </summary>
+            <param name="databasePath">
+            Specifies the path to the database file.
+            </param>
+            <param name="storeDateTimeAsTicks">
+            Specifies whether to store DateTime properties as ticks (true) or strings (false). You
+            absolutely do want to store them as Ticks in all new projects. The default of false is
+            only here for backwards compatibility. There is a *significant* speed advantage, with no
+            down sides, when setting storeDateTimeAsTicks = true.
+            </param>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.BeginTransaction">
+            <summary>
+            Begins a new transaction. Call <see cref="M:SQLite.SQLiteConnection.Commit"/> to end the transaction.
+            </summary>
+            <example cref="T:System.InvalidOperationException">Throws if a transaction has already begun.</example>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Commit">
+            <summary>
+            Commits the transaction that was begun by <see cref="M:SQLite.SQLiteConnection.BeginTransaction"/>.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.CreateCommand(System.String,System.Object[])">
+            <summary>
+            Creates a new SQLiteCommand given the command text with arguments. Place a '?'
+            in the command text for each of the arguments.
+            </summary>
+            <param name="cmdText">
+            The fully escaped SQL.
+            </param>
+            <param name="args">
+            Arguments to substitute for the occurences of '?' in the command text.
+            </param>
+            <returns>
+            A <see cref="T:SQLite.SQLiteCommand"/>
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.CreateIndex(System.String,System.String,System.String[],System.Boolean)">
+            <summary>
+            Creates an index for the specified table and columns.
+            </summary>
+            <param name="indexName">Name of the index to create</param>
+            <param name="tableName">Name of the database table</param>
+            <param name="columnNames">An array of column names to index</param>
+            <param name="unique">Whether the index should be unique</param>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.CreateIndex(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Creates an index for the specified table and column.
+            </summary>
+            <param name="indexName">Name of the index to create</param>
+            <param name="tableName">Name of the database table</param>
+            <param name="columnName">Name of the column to index</param>
+            <param name="unique">Whether the index should be unique</param>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.CreateIndex(System.String,System.String,System.Boolean)">
+            <summary>
+            Creates an index for the specified table and column.
+            </summary>
+            <param name="tableName">Name of the database table</param>
+            <param name="columnName">Name of the column to index</param>
+            <param name="unique">Whether the index should be unique</param>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.CreateIndex(System.String,System.String[],System.Boolean)">
+            <summary>
+            Creates an index for the specified table and columns.
+            </summary>
+            <param name="tableName">Name of the database table</param>
+            <param name="columnNames">An array of column names to index</param>
+            <param name="unique">Whether the index should be unique</param>
+        </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:SQLite.SQLiteConnection.CreateIndex``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)" ignoriert -->
+        <member name="M:SQLite.SQLiteConnection.CreateTable``1(SQLite.CreateFlags)">
+            <summary>
+            Executes a "create table if not exists" on the database. It also
+            creates any specified indexes on the columns of the table. It uses
+            a schema automatically generated from the specified type. You can
+            later access this schema by calling GetMapping.
+            </summary>
+            <returns>
+            The number of entries added to the database schema.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.CreateTable(System.Type,SQLite.CreateFlags)">
+            <summary>
+            Executes a "create table if not exists" on the database. It also
+            creates any specified indexes on the columns of the table. It uses
+            a schema automatically generated from the specified type. You can
+            later access this schema by calling GetMapping.
+            </summary>
+            <param name="ty">Type to reflect to a database table.</param>
+            <param name="createFlags">Optional flags allowing implicit PK and indexes based on naming conventions.</param>
+            <returns>
+            The number of entries added to the database schema.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.DeferredQuery``1(System.String,System.Object[])">
+            <summary>
+            Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+            in the command text for each of the arguments and then executes that command.
+            It returns each row of the result using the mapping automatically generated for
+            the given type.
+            </summary>
+            <param name="query">
+            The fully escaped SQL.
+            </param>
+            <param name="args">
+            Arguments to substitute for the occurences of '?' in the query.
+            </param>
+            <returns>
+            An enumerable with one result for each row returned by the query.
+            The enumerator will call sqlite3_step on each call to MoveNext, so the database
+            connection must remain open for the lifetime of the enumerator.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.DeferredQuery(SQLite.TableMapping,System.String,System.Object[])">
+            <summary>
+            Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+            in the command text for each of the arguments and then executes that command.
+            It returns each row of the result using the specified mapping. This function is
+            only used by libraries in order to query the database via introspection. It is
+            normally not used.
+            </summary>
+            <param name="map">
+            A <see cref="T:SQLite.TableMapping"/> to use to convert the resulting rows
+            into objects.
+            </param>
+            <param name="query">
+            The fully escaped SQL.
+            </param>
+            <param name="args">
+            Arguments to substitute for the occurences of '?' in the query.
+            </param>
+            <returns>
+            An enumerable with one result for each row returned by the query.
+            The enumerator will call sqlite3_step on each call to MoveNext, so the database
+            connection must remain open for the lifetime of the enumerator.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Delete(System.Object)">
+            <summary>
+            Deletes the given object from the database using its primary key.
+            </summary>
+            <param name="objectToDelete">
+            The object to delete. It must have a primary key designated using the PrimaryKeyAttribute.
+            </param>
+            <returns>
+            The number of rows deleted.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Delete``1(System.Object)">
+            <summary>
+            Deletes the object with the specified primary key.
+            </summary>
+            <param name="primaryKey">
+            The primary key of the object to delete.
+            </param>
+            <returns>
+            The number of objects deleted.
+            </returns>
+            <typeparam name='T'>
+            The type of object.
+            </typeparam>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.DeleteAll``1">
+            <summary>
+            Deletes all the objects from the specified table.
+            WARNING WARNING: Let me repeat. It deletes ALL the objects from the
+            specified table. Do you really want to do that?
+            </summary>
+            <returns>
+            The number of objects deleted.
+            </returns>
+            <typeparam name='T'>
+            The type of objects to delete.
+            </typeparam>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.DropTable``1">
+            <summary>
+            Executes a "drop table" on the database.  This is non-recoverable.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Execute(System.String,System.Object[])">
+            <summary>
+            Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+            in the command text for each of the arguments and then executes that command.
+            Use this method instead of Query when you don't expect rows back. Such cases include
+            INSERTs, UPDATEs, and DELETEs.
+            You can set the Trace or TimeExecution properties of the connection
+            to profile execution.
+            </summary>
+            <param name="query">
+            The fully escaped SQL.
+            </param>
+            <param name="args">
+            Arguments to substitute for the occurences of '?' in the query.
+            </param>
+            <returns>
+            The number of rows modified in the database as a result of this execution.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Find``1(System.Object)">
+            <summary>
+            Attempts to retrieve an object with the given primary key from the table
+            associated with the specified type. Use of this method requires that
+            the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+            </summary>
+            <param name="pk">
+            The primary key.
+            </param>
+            <returns>
+            The object with the given primary key or null
+            if the object is not found.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Find(System.Object,SQLite.TableMapping)">
+            <summary>
+            Attempts to retrieve an object with the given primary key from the table
+            associated with the specified type. Use of this method requires that
+            the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+            </summary>
+            <param name="pk">
+            The primary key.
+            </param>
+            <param name="map">
+            The TableMapping used to identify the object type.
+            </param>
+            <returns>
+            The object with the given primary key or null
+            if the object is not found.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Find``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Attempts to retrieve the first object that matches the predicate from the table
+            associated with the specified type.
+            </summary>
+            <param name="predicate">
+            A predicate for which object to find.
+            </param>
+            <returns>
+            The object that matches the given predicate or null
+            if the object is not found.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Get``1(System.Object)">
+            <summary>
+            Attempts to retrieve an object with the given primary key from the table
+            associated with the specified type. Use of this method requires that
+            the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+            </summary>
+            <param name="pk">
+            The primary key.
+            </param>
+            <returns>
+            The object with the given primary key. Throws a not found exception
+            if the object is not found.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Get``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Attempts to retrieve the first object that matches the predicate from the table
+            associated with the specified type.
+            </summary>
+            <param name="predicate">
+            A predicate for which object to find.
+            </param>
+            <returns>
+            The object that matches the given predicate. Throws a not found exception
+            if the object is not found.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.GetMapping(System.Type,SQLite.CreateFlags)">
+            <summary>
+            Retrieves the mapping that is automatically generated for the given type.
+            </summary>
+            <param name="type">
+            The type whose mapping to the database is returned.
+            </param>
+            <param name="createFlags">
+            Optional flags allowing implicit PK and indexes based on naming conventions
+            </param>
+            <returns>
+            The mapping represents the schema of the columns of the database and contains
+            methods to set and get properties of objects.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.GetMapping``1">
+            <summary>
+            Retrieves the mapping that is automatically generated for the given type.
+            </summary>
+            <returns>
+            The mapping represents the schema of the columns of the database and contains
+            methods to set and get properties of objects.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Insert(System.Object)">
+            <summary>
+            Inserts the given object and retrieves its
+            auto incremented primary key if it has one.
+            </summary>
+            <param name="obj">
+            The object to insert.
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Insert(System.Object,System.Type)">
+            <summary>
+            Inserts the given object and retrieves its
+            auto incremented primary key if it has one.
+            </summary>
+            <param name="obj">
+            The object to insert.
+            </param>
+            <param name="objType">
+            The type of object to insert.
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Insert(System.Object,System.String)">
+            <summary>
+            Inserts the given object and retrieves its
+            auto incremented primary key if it has one.
+            </summary>
+            <param name="obj">
+            The object to insert.
+            </param>
+            <param name="extra">
+            Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Insert(System.Object,System.String,System.Type)">
+            <summary>
+            Inserts the given object and retrieves its
+            auto incremented primary key if it has one.
+            </summary>
+            <param name="obj">
+            The object to insert.
+            </param>
+            <param name="extra">
+            Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
+            </param>
+            <param name="objType">
+            The type of object to insert.
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.InsertAll(System.Collections.IEnumerable)">
+            <summary>
+            Inserts all specified objects.
+            </summary>
+            <param name="objects">
+            An <see cref="!:IEnumerable"/> of the objects to insert.
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.InsertAll(System.Collections.IEnumerable,System.String)">
+            <summary>
+            Inserts all specified objects.
+            </summary>
+            <param name="objects">
+            An <see cref="!:IEnumerable"/> of the objects to insert.
+            </param>
+            <param name="extra">
+            Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.InsertAll(System.Collections.IEnumerable,System.Type)">
+            <summary>
+            Inserts all specified objects.
+            </summary>
+            <param name="objects">
+            An <see cref="!:IEnumerable"/> of the objects to insert.
+            </param>
+            <param name="objType">
+            The type of object to insert.
+            </param>
+            <returns>
+            The number of rows added to the table.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.InsertOrReplace(System.Object)">
+            <summary>
+            Inserts the given object and retrieves its
+            auto incremented primary key if it has one.
+            If a UNIQUE constraint violation occurs with
+            some pre-existing object, this function deletes
+            the old object.
+            </summary>
+            <param name="obj">
+            The object to insert.
+            </param>
+            <returns>
+            The number of rows modified.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.InsertOrReplace(System.Object,System.Type)">
+            <summary>
+            Inserts the given object and retrieves its
+            auto incremented primary key if it has one.
+            If a UNIQUE constraint violation occurs with
+            some pre-existing object, this function deletes
+            the old object.
+            </summary>
+            <param name="obj">
+            The object to insert.
+            </param>
+            <param name="objType">
+            The type of object to insert.
+            </param>
+            <returns>
+            The number of rows modified.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Query``1(System.String,System.Object[])">
+            <summary>
+            Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+            in the command text for each of the arguments and then executes that command.
+            It returns each row of the result using the mapping automatically generated for
+            the given type.
+            </summary>
+            <param name="query">
+            The fully escaped SQL.
+            </param>
+            <param name="args">
+            Arguments to substitute for the occurences of '?' in the query.
+            </param>
+            <returns>
+            An enumerable with one result for each row returned by the query.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Query(SQLite.TableMapping,System.String,System.Object[])">
+            <summary>
+            Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+            in the command text for each of the arguments and then executes that command.
+            It returns each row of the result using the specified mapping. This function is
+            only used by libraries in order to query the database via introspection. It is
+            normally not used.
+            </summary>
+            <param name="map">
+            A <see cref="T:SQLite.TableMapping"/> to use to convert the resulting rows
+            into objects.
+            </param>
+            <param name="query">
+            The fully escaped SQL.
+            </param>
+            <param name="args">
+            Arguments to substitute for the occurences of '?' in the query.
+            </param>
+            <returns>
+            An enumerable with one result for each row returned by the query.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Release(System.String)">
+             <summary>
+             Releases a savepoint returned from <see cref="M:SQLite.SQLiteConnection.SaveTransactionPoint"/>.  Releasing a savepoint
+                makes changes since that savepoint permanent if the savepoint began the transaction,
+                or otherwise the changes are permanent pending a call to <see cref="M:SQLite.SQLiteConnection.Commit"/>.
+            
+             The RELEASE command is like a COMMIT for a SAVEPOINT.
+             </summary>
+             <param name="savepoint">The name of the savepoint to release.  The string should be the result of a call to <see cref="M:SQLite.SQLiteConnection.SaveTransactionPoint"/></param>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Rollback">
+            <summary>
+            Rolls back the transaction that was begun by <see cref="M:SQLite.SQLiteConnection.BeginTransaction"/> or <see cref="M:SQLite.SQLiteConnection.SaveTransactionPoint"/>.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.RollbackTo(System.String)">
+            <summary>
+            Rolls back the savepoint created by <see cref="M:SQLite.SQLiteConnection.BeginTransaction"/> or SaveTransactionPoint.
+            </summary>
+            <param name="savepoint">The name of the savepoint to roll back to, as returned by <see cref="M:SQLite.SQLiteConnection.SaveTransactionPoint"/>.  If savepoint is null or empty, this method is equivalent to a call to <see cref="M:SQLite.SQLiteConnection.Rollback"/></param>
+        </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:SQLite.SQLiteConnection.RunInTransaction(System.Action)" ignoriert -->
+        <member name="M:SQLite.SQLiteConnection.SaveTransactionPoint">
+             <summary>
+             Creates a savepoint in the database at the current point in the transaction timeline.
+             Begins a new transaction if one is not in progress.
+            
+             Call <see cref="M:SQLite.SQLiteConnection.RollbackTo(System.String)"/> to undo transactions since the returned savepoint.
+             Call <see cref="M:SQLite.SQLiteConnection.Release(System.String)"/> to commit transactions after the savepoint returned here.
+             Call <see cref="M:SQLite.SQLiteConnection.Commit"/> to end the transaction, committing all changes.
+             </summary>
+             <returns>A string naming the savepoint.</returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Table``1">
+            <summary>
+            Returns a queryable interface to the table represented by the given type.
+            </summary>
+            <returns>
+            A queryable object that is able to translate Where, OrderBy, and Take
+            queries into native SQL.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Update(System.Object)">
+            <summary>
+            Updates all of the columns of a table using the specified object
+            except for its primary key.
+            The object is required to have a primary key.
+            </summary>
+            <param name="obj">
+            The object to update. It must have a primary key designated using the PrimaryKeyAttribute.
+            </param>
+            <returns>
+            The number of rows updated.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.Update(System.Object,System.Type)">
+            <summary>
+            Updates all of the columns of a table using the specified object
+            except for its primary key.
+            The object is required to have a primary key.
+            </summary>
+            <param name="obj">
+            The object to update. It must have a primary key designated using the PrimaryKeyAttribute.
+            </param>
+            <param name="objType">
+            The type of object to insert.
+            </param>
+            <returns>
+            The number of rows updated.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.UpdateAll(System.Collections.IEnumerable)">
+            <summary>
+            Updates all specified objects.
+            </summary>
+            <param name="objects">
+            An <see cref="!:IEnumerable"/> of the objects to insert.
+            </param>
+            <returns>
+            The number of rows modified.
+            </returns>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.NewCommand">
+            <summary>
+            Creates a new SQLiteCommand. Can be overridden to provide a sub-class.
+            </summary>
+            <seealso cref="M:SQLite.SQLiteCommand.OnInstanceCreated(System.Object)"/>
+        </member>
+        <member name="M:SQLite.SQLiteConnection.RollbackTo(System.String,System.Boolean)">
+            <summary>
+            Rolls back the transaction that was begun by <see cref="M:SQLite.SQLiteConnection.BeginTransaction"/>.
+            </summary>
+            <param name="noThrow">true to avoid throwing exceptions, false otherwise</param>
+        </member>
+        <member name="P:SQLite.SQLiteConnection.BusyTimeout">
+            <summary>
+            Sets a busy handler to sleep the specified amount of time when a table is locked.
+            The handler will sleep multiple times until a total time of <see cref="P:SQLite.SQLiteConnection.BusyTimeout"/> has accumulated.
+            </summary>
+        </member>
+        <member name="P:SQLite.SQLiteConnection.IsInTransaction">
+            <summary>
+            Whether <see cref="M:SQLite.SQLiteConnection.BeginTransaction"/> has been called and the database is waiting for a <see cref="M:SQLite.SQLiteConnection.Commit"/>.
+            </summary>
+        </member>
+        <member name="P:SQLite.SQLiteConnection.TableMappings">
+            <summary>
+            Returns the mappings from types to tables that the connection
+            currently understands.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Database.Map">
+            <summary>
+            Represents an entry in the Maps table.
+            </summary>
+        </member>
+        <member name="T:SQLite.PreparedSqlLiteInsertCommand">
+            <summary>
+            Since the insert never changed, we only need to prepare once.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteCommand.OnInstanceCreated(System.Object)">
+             <summary>
+             Invoked every time an instance is loaded from the database.
+             </summary>
+             <param name="obj">
+             The newly created object.
+             </param>
+             <remarks>
+             This can be overridden in combination with the <see cref="M:SQLite.SQLiteConnection.NewCommand"/>
+             method to hook into the life-cycle of objects.
+            
+             Type safety is not possible because MonoTouch does not support virtual generic methods.
+             </remarks>
+        </member>
+        <member name="M:SQLite.TableQuery`1.CompileNullBinaryExpression(System.Linq.Expressions.BinaryExpression,SQLite.TableQuery{`0}.CompileResult)">
+            <summary>
+            Compiles a BinaryExpression where one of the parameters is null.
+            </summary>
+            <param name="parameter">The non-null parameter</param>
+        </member>
+        <member name="T:SQLite.SQLiteConnectionString">
+            <summary>
+            Represents a parsed connection string.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteConnectionPool.ApplicationSuspended">
+            <summary>
+            Call this method when the application is suspended.
+            </summary>
+            <remarks>Behaviour here is to close any open connections.</remarks>
+        </member>
+        <member name="M:SQLite.SQLiteConnectionPool.Reset">
+            <summary>
+            Closes all connections managed by this pool.
+            </summary>
+        </member>
+        <member name="P:SQLite.SQLiteConnectionPool.Shared">
+            <summary>
+            Gets the singleton instance of the connection tool.
+            </summary>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Tools.FormatMilliseconds(System.Int32,System.String,System.Boolean)">
+            <summary>
+            Formats a given int of milliseconds to a displayable record like 43512 -> 0:43.51
+            </summary>
+            <param name="time">The time in milliseconds</param>
+            <param name="format">Optinally a different format, e.g. to add a third thausandth</param>
+            <param name="sign">Add a + or a - in front of the output</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Tools.StripFormatting(System.String,System.Char[])">
+            <summary>
+            Removes Maniaplanet/TMF text formatting
+            </summary>
+            <param name="input">String to remove formatting from</param>
+            <param name="level">c - colors, l - links, f - format (bold, italic, ...), a - all
+            Combinations possible</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
