@@ -15,13 +15,18 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
     public class CurrentMapPlugin : ControllerPlugin
     {
         private readonly string mxMessage = "$7f0>> Visit $<$z@Model.Name$> on $l[@Model.Url]Mania-Exchange$l!";
-        private readonly string widget = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap.Widget.csxml")).ReadToEnd();
+
+        private readonly string widget =
+            new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap.Widget.csxml")).ReadToEnd();
 
         public override bool Load(ServerController controller)
         {
+            if (!isAssemblyServerController(Assembly.GetCallingAssembly()))
+                return false;
+
             controller.BeginMap += controller_BeginMap;
 
-            GetCurrentMapInfo getCurrentMapInfoCall = new GetCurrentMapInfo();
+            var getCurrentMapInfoCall = new GetCurrentMapInfo();
             if (controller.CallMethod(getCurrentMapInfoCall, 1000) && !getCurrentMapInfoCall.HadFault)
                 displayWidget(controller, getCurrentMapInfoCall.ReturnValue);
 
@@ -29,12 +34,11 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
         }
 
         public override void Run()
-        {
-        }
+        { }
 
         public override bool Unload()
         {
-            return true;
+            return isAssemblyServerController(Assembly.GetCallingAssembly());
         }
 
         private void controller_BeginMap(ServerController sender, ManiaPlanetBeginMap methodCall)
@@ -110,9 +114,9 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                     }
                     success = true;
                 }
-                catch { }
-            }
-            while (!success);
+                catch
+                { }
+            } while (!success);
 
             return result;
         }
@@ -136,15 +140,13 @@ namespace ManiaNet.DedicatedServer.Controller.Plugins.CurrentMap
                         result.Add("path", string.Empty);
                     }
                     else
-                    {
                         result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                    }
 
                     success = true;
                 }
-                catch { }
-            }
-            while (!success);
+                catch
+                { }
+            } while (!success);
 
             return result;
         }

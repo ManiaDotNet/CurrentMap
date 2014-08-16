@@ -76,6 +76,11 @@
             Gets whether clients are allowed to disable the display of manialinks from certain plugins.
             </summary>
         </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.DatabasePath">
+            <summary>
+            Gets the path to the database file.
+            </summary>
+        </member>
         <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Login">
             <summary>
             Gets the Login that the controller will use to authenticate with the xml rpc server.
@@ -116,6 +121,11 @@
             Gets or sets whether clients are allowed to disable the display of manialinks from certain plugins.
             </summary>
         </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.DatabasePath">
+            <summary>
+            Gets or sets the path to the database file.
+            </summary>
+        </member>
         <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.Login">
             <summary>
             Gets or sets the Login that the controller will use to authenticate with the xml rpc server.
@@ -149,6 +159,11 @@
         <member name="P:ManiaNet.DedicatedServer.Controller.Configuration.ServerControllerConfig.Builder.configResource">
             <summary>
             Gets the identifier for the dll resource containing the default config.
+            </summary>
+        </member>
+        <member name="T:ManiaNet.DedicatedServer.Controller.Database.Client">
+            <summary>
+            Represents an entry in the Clients table.
             </summary>
         </member>
         <member name="T:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin">
@@ -185,6 +200,18 @@
             Use this to save your data.
             </summary>
             <returns>Whether it unloaded successfully or not.</returns>
+        </member>
+        <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.isAssemblyServerController(System.Reflection.Assembly)">
+            <summary>
+            Takes an assembly and returns whether it's the Server Controller assembly or not.
+            <para/>
+            Allows the plugin to make sure that only the Server Controller can call certain methods.
+            <para/>
+            Usage: isAssemblyServerController(Assembly.GetCallingAssembly());
+            </summary>
+            <example>isAssemblyServerController(Assembly.GetCallingAssembly());</example>
+            <param name="assembly">The assembly to check.</param>
+            <returns>Whether the given assembly is the Server Controller assembly or not.</returns>
         </member>
         <member name="M:ManiaNet.DedicatedServer.Controller.Plugins.ControllerPlugin.onClientManialinksChanged">
             <summary>
@@ -300,8 +327,10 @@
             <typeparam name="TReturn">The method call's returned XmlRpcType.</typeparam>
             <typeparam name="TReturnBase">The method call's type of the returned value.</typeparam>
             <param name="methodCall">The method call to be executed.</param>
-            <param name="timeout">The maximum time in milliseconds to wait for a response.</param>
+            <param name="timeout">The maximum time in milliseconds to wait for a response.
+            If the timeout is less than or equal to zero, the function will return true, as it won't wait for the response.</param>
             <returns>Whether the call was returned (regardless of whether successful or not).</returns>
+            <remarks>If the timeout is less than or equal to zero, the function will return true, as it won't wait for the response.</remarks>
         </member>
         <member name="M:ManiaNet.DedicatedServer.Controller.ServerController.Start">
             <summary>
@@ -367,6 +396,11 @@
         <member name="P:ManiaNet.DedicatedServer.Controller.ServerController.Configuration">
             <summary>
             Gets the configuration of the controller.
+            </summary>
+        </member>
+        <member name="P:ManiaNet.DedicatedServer.Controller.ServerController.Database">
+            <summary>
+            Gets the connection to the SQLite database.
             </summary>
         </member>
         <member name="P:ManiaNet.DedicatedServer.Controller.ServerController.RegisteredCommands">
@@ -489,10 +523,29 @@
             <param name="sender">The ServerController that fired the event.</param>
             <param name="methodCall">The method call information.</param>
         </member>
-        <member name="T:ManiaNet.DedicatedServer.Controller.Database.Client">
+        <member name="T:ManiaNet.DedicatedServer.Controller.Database.Map">
             <summary>
-            Represents an entry in the Clients table.
+            Represents an entry in the Maps table.
             </summary>
+        </member>
+        <member name="T:SQLite.PreparedSqlLiteInsertCommand">
+            <summary>
+            Since the insert never changed, we only need to prepare once.
+            </summary>
+        </member>
+        <member name="M:SQLite.SQLiteCommand.OnInstanceCreated(System.Object)">
+             <summary>
+             Invoked every time an instance is loaded from the database.
+             </summary>
+             <param name="obj">
+             The newly created object.
+             </param>
+             <remarks>
+             This can be overridden in combination with the <see cref="M:SQLite.SQLiteConnection.NewCommand"/>
+             method to hook into the life-cycle of objects.
+            
+             Type safety is not possible because MonoTouch does not support virtual generic methods.
+             </remarks>
         </member>
         <member name="T:SQLite.SQLiteConnection">
             <summary>
@@ -1093,30 +1146,6 @@
             Returns the mappings from types to tables that the connection
             currently understands.
             </summary>
-        </member>
-        <member name="T:ManiaNet.DedicatedServer.Controller.Database.Map">
-            <summary>
-            Represents an entry in the Maps table.
-            </summary>
-        </member>
-        <member name="T:SQLite.PreparedSqlLiteInsertCommand">
-            <summary>
-            Since the insert never changed, we only need to prepare once.
-            </summary>
-        </member>
-        <member name="M:SQLite.SQLiteCommand.OnInstanceCreated(System.Object)">
-             <summary>
-             Invoked every time an instance is loaded from the database.
-             </summary>
-             <param name="obj">
-             The newly created object.
-             </param>
-             <remarks>
-             This can be overridden in combination with the <see cref="M:SQLite.SQLiteConnection.NewCommand"/>
-             method to hook into the life-cycle of objects.
-            
-             Type safety is not possible because MonoTouch does not support virtual generic methods.
-             </remarks>
         </member>
         <member name="M:SQLite.TableQuery`1.CompileNullBinaryExpression(System.Linq.Expressions.BinaryExpression,SQLite.TableQuery{`0}.CompileResult)">
             <summary>
